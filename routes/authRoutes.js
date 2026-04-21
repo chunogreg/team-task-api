@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const authMiddleware = require("../middleware/authMiddleware");
 const { logout, logoutAll } = require("../controller/authController");
+const { token } = require("morgan");
 
 //const user = require("../models/user");
 
@@ -21,12 +22,12 @@ const { logout, logoutAll } = require("../controller/authController");
 
 router.post("/signup", async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     const saltRound = 12;
     const passwordHash = await bcrypt.hash(password, saltRound);
 
-    const user = new User({ username, passwordHash });
+    const user = new User({ email, passwordHash });
 
     //const savedUser = await user.save();
     await user.save();
@@ -50,7 +51,7 @@ router.post("/signup", async (req, res, next) => {
  *          schema:
  *            type: object
  *            properties:
- *              username:
+ *              email:
  *                type: string
  *              password:
  *                type: string
@@ -63,17 +64,17 @@ router.post("/signup", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
-      res.status(401).json({ message: "Invalid username or password" });
+      res.status(401).json({ message: "Invalid email or password" });
     }
     const accessToken = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_ACCESS_SECRET,
       { expiresIn: "15m" },
     );
@@ -142,7 +143,7 @@ router.post("/refresh", async (req, res, next) => {
       return res.status(403).json({ message: "invalid refresh token" });
     }
     const accessToken = jwt.sign(
-      { userId: validUser._id, username: validUser.username },
+      { userId: validUser._id, email: validUser.email },
       process.env.JWT_ACCESS_SECRET,
       { expiresIn: "15m" },
     );

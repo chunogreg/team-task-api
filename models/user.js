@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    email: {
       type: String,
       required: [true, "Username is require"],
       minLength: [3, "Username must be atleast 3 character long"],
@@ -10,7 +10,13 @@ const userSchema = new mongoose.Schema(
     },
     passwordHash: { type: String, required: true },
     refreshTokens: [{ tokenHash: String, createdAt: Date, expiredAt: Date }],
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
+
   { timestamps: true },
 );
 

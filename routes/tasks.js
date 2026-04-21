@@ -3,6 +3,8 @@ const router = express.Router();
 const Task = require("../models/task");
 const { body, validationResult } = require("express-validator");
 const authenticateToken = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/authorizeRoles");
+const { deleteTasks, getTasks } = require("../controller/taskController");
 //const asyncHandler = require("express-async-handler");
 
 /**
@@ -23,20 +25,26 @@ const authenticateToken = require("../middleware/authMiddleware");
  *        description: List of tasks
  */
 
-router.get("/", authenticateToken, async (req, res) => {
-  //throw new Error("Async crash test");
-  try {
-    const filter = {};
+router.get(
+  "/",
+  authenticateToken,
+  authorizeRoles("user", "admin"),
+  getTasks,
+  async (req, res) => {
+    //throw new Error("Async crash test");
+    try {
+      const filter = {};
 
-    if (req.query.done !== undefined) {
-      filter.done = req.query.done === "true";
+      if (req.query.done !== undefined) {
+        filter.done = req.query.done === "true";
+      }
+      const tasks = await Task.find(filter);
+      res.json(tasks);
+    } catch (error) {
+      next(error);
     }
-    const tasks = await Task.find(filter);
-    res.json(tasks);
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 /**
  * @swagger
@@ -118,20 +126,25 @@ router.put("/:id", async (req, res, next) => {
  *          description: Task deleted
  */
 
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const result = await Task.findByIdAndDelete(req.params.id);
-    if (result) {
-      res.status(200).json({
-        message: "Task deleted successfully",
-      });
-    } else {
-      res.status(404).json({ error: "data not found" });
+router.delete(
+  "/:id",
+  authenticateToken,
+  authorizeRoles("admin"),
+  async (req, res, next) => {
+    try {
+      const result = await Task.findByIdAndDelete(req.params.id);
+      if (result) {
+        res.status(200).json({
+          message: "Task deleted successfully",
+        });
+      } else {
+        res.status(404).json({ error: "data not found" });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 //const { body, validationResult } = require("express-validator");
 
@@ -148,6 +161,7 @@ router.delete("/:id", async (req, res, next) => {
 router.post(
   "/",
   authenticateToken,
+  getTasks,
 
   [
     body("title")
