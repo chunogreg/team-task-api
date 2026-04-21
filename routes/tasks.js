@@ -5,6 +5,8 @@ const { body, validationResult } = require("express-validator");
 const authenticateToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/authorizeRoles");
 const { deleteTasks, getTasks } = require("../controller/taskController");
+const canModifyTask = require("../middleware/canModifyTask.js");
+
 //const asyncHandler = require("express-async-handler");
 
 /**
@@ -28,7 +30,7 @@ const { deleteTasks, getTasks } = require("../controller/taskController");
 router.get(
   "/",
   authenticateToken,
-  authorizeRoles("user", "admin"),
+  //authorizeRoles("user", "admin"),
   getTasks,
   async (req, res) => {
     //throw new Error("Async crash test");
@@ -129,7 +131,9 @@ router.put("/:id", async (req, res, next) => {
 router.delete(
   "/:id",
   authenticateToken,
-  authorizeRoles("admin"),
+  canModifyTask,
+  deleteTasks,
+  // authorizeRoles("admin"),
   async (req, res, next) => {
     try {
       const result = await Task.findByIdAndDelete(req.params.id);
@@ -160,9 +164,6 @@ router.delete(
  */
 router.post(
   "/",
-  authenticateToken,
-  getTasks,
-
   [
     body("title")
       .isLength({ min: 3, max: 100 })
@@ -176,6 +177,7 @@ router.post(
       .toBoolean(),
   ],
   async (req, res) => {
+    console.log("🔥 createTask HIT");
     //throw new Error("Test crash");
     try {
       const errors = validationResult(req);
@@ -188,11 +190,9 @@ router.post(
         done: req.body.done,
       });
 
-      // console.log("Incoming done:", req.body.done);
-      // console.log("Type of done:", typeof req.body.done);
-
       const savedTask = await task.save();
       res.status(201).json(savedTask);
+      console.log("Saved task:", savedTask);
     } catch (error) {
       next(error);
     }
