@@ -22,9 +22,14 @@ const canModifyTask = require("../middleware/canModifyTask.js");
  *  get:
  *    summary: Get all tasks
  *    tags: [Tasks]
+ *    security:
+ *      - bearerAuth: []
  *    responses:
  *      200:
  *        description: List of tasks
+ *      401:
+ *        description: Not Authenticated
+ *
  */
 
 router.get(
@@ -84,6 +89,12 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
  *  put:
  *    summary: Update a task
  *    tags: [Tasks]
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
  *    response:
  *      200:
  *        description: Task updated
@@ -123,6 +134,12 @@ router.put("/:id", async (req, res, next) => {
  *  delete:
  *    summary: Delete a task
  *    tags: [Tasks]
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
  *    responses:
  *        200:
  *          description: Task deleted
@@ -158,7 +175,19 @@ router.delete(
  *  post:
  *    summary: Create a new task
  *    tags: [Tasks]
- *    response:
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              title:
+ *                type: string
+ *                example: Finish project
+ *    responses:
  *      201:
  *        description: Task created
  */
@@ -200,66 +229,3 @@ router.post(
 );
 
 module.exports = router;
-
-// const express = require("express");
-// const router = express.Router();
-// const fs = require("fs");
-
-// const dataPath = "./data/tasks.json";
-
-// //helper function to read tasks
-// const getTasks = () => {
-//   const data = fs.readFileSync(dataPath);
-//   return JSON.parse(data);
-// };
-
-// //helper function to save data
-// const saveTasks = (tasks) => {
-//   fs.writeFileSync(dataPath, JSON.stringify(tasks, null, 2));
-// };
-
-// router.get("/", (req, res) => {
-//   const tasks = getTasks();
-//   res.json(tasks);
-// });
-
-// router.post("/", (req, res) => {
-//   const tasks = getTasks();
-
-//   const newTask = {
-//     id: tasks.length + 1,
-//     title: req.body.title,
-//     done: false,
-//   };
-
-//   tasks.push(newTask);
-//   saveTasks(tasks);
-//   res.json(newTask);
-// });
-
-// module.exports = router;
-
-// // const express = require("express");
-// // const router = express.Router();
-
-// // let tasks = [
-// //   { id: 1, title: "Learn Node.js", done: false },
-// //   { id: 2, title: "Build first API", done: false }
-// // ];
-
-// // router.get("/", (req, res) => {
-// //   res.json(tasks);
-// // });
-
-// // router.post("/", (req, res) => {
-// //   const newTask = {
-// //     id: tasks.length + 1,
-// //     title: req.body.title,
-// //     done: false
-// //   };
-
-// //   tasks.push(newTask);
-// //   res.json(newTask);
-// // });
-
-// // module.exports = router;

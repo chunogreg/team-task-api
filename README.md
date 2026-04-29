@@ -1,4 +1,4 @@
-# Secure Task API
+# Team Task Management API (RBAC-enabled)
 
 A security-focused REST API for task management built with Node.js, Express, and MongoDB.
 
@@ -14,6 +14,8 @@ This project demonstrates production-style authentication and security practices
 - **Data Protection:** Industry-standard **Password Hashing with bcrypt**
 - **Threat Mitigation:** Integrated **Rate Limiting** and **suspicious Request Logging** to identify and block brute-force attempts.
 - **Secure Transport:** Hardened Secure **HTTP-only cookies** and **Helmet security headers**
+- Role-Based Access Control
+- Ownership ckecks (users can only modify their own task)
 
 ---
 

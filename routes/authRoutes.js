@@ -15,6 +15,22 @@ const { token } = require("morgan");
  *  post:
  *    summary: Register a user
  *    tags: [Authentication]
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *                example: user@example.com
+ *              password:
+ *                type: string
+ *                example: 123456
  *    responses:
  *      201:
  *        description: User created successfully
@@ -108,6 +124,13 @@ router.post("/login", async (req, res, next) => {
  *  post:
  *    summary: Refresh access token
  *    tags: [Authentication]
+ *    parameters:
+ *      - in: header
+ *        name: x-refresh-token
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: The refresh token for generating a new access token
  *    responses:
  *      200:
  *        description: New access token issued

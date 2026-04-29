@@ -62,14 +62,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
 });
 
-app.use("/api/tasks", taskRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.json({
-    service: "Secure Task API",
+    service: "Team Task Management API",
     status: "Running",
     documentation: "/api-docs",
   });
