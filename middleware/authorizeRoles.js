@@ -3,6 +3,8 @@ const authorizeRoles = (...allowedRoles) => {
     if (!req.user) {
       return res.status(401).json({ message: "Not authenticated" });
     }
+    console.log("INSUFFICIENT PERMISSIONS REQUEST.USER  ===", req.user);
+
     if (!allowedRoles.includes(req.user.role)) {
       return res
         .status(403)

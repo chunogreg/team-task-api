@@ -9,6 +9,26 @@ const canModifyTask = require("../middleware/canModifyTask.js");
 
 //const asyncHandler = require("express-async-handler");
 
+router.get(
+  "/admin-only-route",
+  (req, res, next) => {
+    console.log("ADMIN-ONLY-ROUTE HIT");
+    next();
+  },
+  authenticateToken,
+  (req, res, next) => {
+    console.log("AFTER AUTH");
+    next();
+  },
+  authorizeRoles("admin"),
+  (req, res) => {
+    console.log("FINAL HANDLER"); // if (req.user.role !== "admin") {
+    //   return res.status(403).json({ message: "Access denied" });
+    // }
+    res.status(200).json({ message: "WELCOME ADMIN" });
+  },
+);
+
 /**
  * @swagger
  * tags:

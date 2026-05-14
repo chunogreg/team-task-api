@@ -44,7 +44,10 @@ router.post("/signup", async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, saltRound);
 
     const user = new User({ email, passwordHash });
-
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already in use" });
+    }
     //const savedUser = await user.save();
     await user.save();
     //res.status(201).json(savedUser);
