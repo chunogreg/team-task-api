@@ -153,14 +153,17 @@ The API will be available at
 
 Interactive API documentation
 
-    http://localhost:3000/api-docm  
+    http://localhost:3000/api-docs
 
 ## Automated Testing
-This project includes automated tests to validate business logic and security endpoints.   
 
-To run the test suite locally:   
+This project includes automated tests to validate business logic and security endpoints.
 
-```npm test```
+To run the test suite locally:
+
+`npm test`
+
 ```
 
 
+```
